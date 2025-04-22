@@ -6,14 +6,21 @@ pipeline {
     }
 
     environment {
-        BRANCH_NAME = "release/21.27"
+        BRANCH_NAME = ""
         TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
 
     stages {
-
-
+        stage('Set Branch Name') {
+            steps {
+                script {
+                    def currentBranch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    echo "Current branch: ${currentBranch}"
+                    env.BRANCH_NAME = currentBranch
+                }
+            }
+        }
 
         stage('Only on release/21.27') {
             when {
