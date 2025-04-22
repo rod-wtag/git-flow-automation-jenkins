@@ -38,15 +38,15 @@ pipeline {
             }
         }
 
-        stage('Create & Push Tag') {
+        stage('Tag & Push') {
             when {
-                branch 'release/21.27'
+                branch 'release/21.25'
             }
             steps {
-                script {
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     sh """
-                        git config user.name "rod-wtag"
-                        git config user.email "roky.das@welldev.io"
+                        git config user.name "jenkins-bot"
+                        git config user.email "jenkins@example.com"
 
                         git tag ${TAG_NAME}
                         git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git ${TAG_NAME}
