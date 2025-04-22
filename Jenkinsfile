@@ -48,6 +48,7 @@ pipeline {
                         git config user.name "rod-wtag"
                         git config user.email "roky.das@welldev.io"
 
+                        git tag -d ${TAG_NAME} || true
                         git tag -f ${TAG_NAME}
                         git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git ${TAG_NAME}
                     """
