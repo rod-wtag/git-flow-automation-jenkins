@@ -12,22 +12,6 @@ pipeline {
     }
 
     stages {
-        stage('Check Version') {
-            steps {
-                script {
-                    def versionFile = readFile('system/config/version.properties')
-                    def versionLine = versionFile.trim()
-                    
-                    echo "Version line: ${versionLine}"
-                    
-                    if (versionLine.contains('SNAPSHOT')) {
-                        echo "SNAPSHOT version detected. Aborting pipeline."
-                        return
-                    }
-                    echo "No SNAPSHOT found. Proceeding with build..."
-                }
-            }
-        }
 
         stage('Only on release/21.27') {
             when {
