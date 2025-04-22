@@ -64,6 +64,7 @@ pipeline {
                     script {
                         sh """
                             git fetch --all
+                            git branch -D release-21.28-local || true
                             git checkout origin/release/21.28 -b release-21.28-local
 
                             # Merge the tag into release/21.28
