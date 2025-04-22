@@ -1,20 +1,3 @@
-// pipeline {
-//     agent any
-
-//     triggers {
-//         githubPush() // Automatically triggers on push via webhook
-//     }
-
-//     stages {
-//         stage('Say Hello') {
-//             steps {
-//                 sh 'echo "hello world"'
-//             }
-//         }
-//     }
-// }
-
-
 pipeline {
     agent any
 
@@ -63,7 +46,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     script {
-                        sh """
+                        sh ""'
                             git fetch --all
                             git branch -D release-21.28-local || true
                             git checkout origin/release/21.28 -b release-21.28-local
@@ -73,7 +56,7 @@ pipeline {
 
                             # Push the updated branch back
                             git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git HEAD:release/21.28
-                        """
+                        '""
                     }
                 }
             }
