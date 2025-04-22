@@ -40,7 +40,7 @@ pipeline {
 
         stage('Tag & Push') {
             when {
-                branch 'release/21.25'
+                branch 'release/21.27'
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
