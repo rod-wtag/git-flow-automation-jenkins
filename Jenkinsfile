@@ -70,7 +70,7 @@ pipeline {
                             git merge ${TAG_NAME} -m "Merge tag ${TAG_NAME} into release/21.28"
 
                             # Push the updated branch back
-                            git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git HEAD:release/21.28
+                            git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git HEAD:release/21.28
                         """
                     }
                 }
