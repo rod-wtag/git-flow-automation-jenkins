@@ -45,11 +45,11 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     sh """
-                        git config user.name "jenkins-bot"
-                        git config user.email "jenkins@example.com"
+                        git config user.name "rod-wtag"
+                        git config user.email "roky.das@welldev.io"
 
                         git tag ${TAG_NAME}
-                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git ${TAG_NAME}
+                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git ${TAG_NAME}
                     """
                 }
             }
