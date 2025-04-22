@@ -23,24 +23,24 @@ pipeline {
     }
 
     environment {
-        BRANCH_NAME = "release/21.26"
-        TAG_NAME = "r21.26.27"
+        BRANCH_NAME = "release/21.27"
+        TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
 
     stages {
-        stage('Only on release/21.26') {
+        stage('Only on release/21.27') {
             when {
-                branch 'release/21.26'
+                branch 'release/21.27'
             }
             steps {
-                echo "Triggered on release/21.26"
+                echo "Triggered on release/21.27"
             }
         }
 
         // stage('Create & Push Tag') {
         //     when {
-        //         branch 'release/21.26'
+        //         branch 'release/21.27'
         //     }
         //     steps {
         //         script {
