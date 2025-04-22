@@ -38,21 +38,21 @@ pipeline {
             }
         }
 
-        // stage('Create & Push Tag') {
-        //     when {
-        //         branch 'release/21.27'
-        //     }
-        //     steps {
-        //         script {
-        //             sh """
-        //                 git config user.name "rod-wtag"
-        //                 git config user.email "roky.das@welldev.io"
+        stage('Create & Push Tag') {
+            when {
+                branch 'release/21.27'
+            }
+            steps {
+                script {
+                    sh """
+                        git config user.name "rod-wtag"
+                        git config user.email "roky.das@welldev.io"
 
-        //                 git tag ${TAG_NAME}
-        //                 git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git ${TAG_NAME}
-        //             """
-        //         }
-        //     }
-        // }
+                        git tag ${TAG_NAME}
+                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git ${TAG_NAME}
+                    """
+                }
+            }
+        }
     }
 }
