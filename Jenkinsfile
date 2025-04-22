@@ -54,5 +54,28 @@ pipeline {
                 }
             }
         }
+
+        stage('Merge Tag to release/21.28') {
+            when {
+                branch 'release/21.27'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
+                    script {
+                        sh """
+                            git fetch --all
+                            git checkout origin/release/21.28 -b release-21.28-local
+
+                            # Merge the tag into release/21.28
+                            git merge ${TAG_NAME} -m "Merge tag ${TAG_NAME} into release/21.28"
+
+                            # Push the updated branch back
+                            git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/your-username/your-repo.git HEAD:release/21.28
+                        """
+                    }
+                }
+            }
+        }
+
     }
 }
