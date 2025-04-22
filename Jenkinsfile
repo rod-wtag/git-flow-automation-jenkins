@@ -27,14 +27,14 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
-                    sh """
+                    sh '''
                         git config user.name "rod-wtag"
                         git config user.email "roky.das@welldev.io"
 
                         git tag -d ${TAG_NAME} || true
                         git tag -f ${TAG_NAME}
-                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git ${TAG_NAME}
-                    """
+                        git push https://$GIT_USERNAME:$GIT_TOKEN@github.com/rod-wtag/git-flow-automation-jenkins.git $TAG_NAME
+                    '''
                 }
             }
         }
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     script {
-                        sh ""'
+                        sh '''
                             git fetch --all
                             git branch -D release-21.28-local || true
                             git checkout origin/release/21.28 -b release-21.28-local
@@ -56,7 +56,7 @@ pipeline {
 
                             # Push the updated branch back
                             git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git HEAD:release/21.28
-                        '""
+                        '''
                     }
                 }
             }
