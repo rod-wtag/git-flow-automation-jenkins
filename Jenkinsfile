@@ -43,7 +43,10 @@ pipeline {
         }
 
         stage('bump version') {
-            echo "Bumping version to ${env.VERSION}"
+            sh """
+                echo "Bumping version to ${env.VERSION}"
+                sed -i 's/version: .*/version: ${env.VERSION}/' system/config/version.properties
+            """
         }
 
         // stage('Tag & Push') {
@@ -66,7 +69,7 @@ pipeline {
         //         }
         //     }
         // }
-        
+
 
         // stage('Merge Tag to release/21.28') {
         //     when {
