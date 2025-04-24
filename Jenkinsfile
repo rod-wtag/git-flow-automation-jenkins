@@ -59,13 +59,13 @@ pipeline {
                         echo "Updated version.properties file with new version."
 
                         // Git commit and push
-                        sh """
-                            git config user.name "rod-wtag"
-                            git config user.email "roky.das@welldev.io"
-                            git add ${versionFilePath}
-                            git commit -m "Bump version to ${env.VERSION}"
-                            git push origin HEAD
-                        """
+                        // sh """
+                        //     git config user.name "rod-wtag"
+                        //     git config user.email "roky.das@welldev.io"
+                        //     git add ${versionFilePath}
+                        //     git commit -m "Bump version to ${env.VERSION}"
+                        //     git push origin HEAD
+                        // """
                     } else {
                         error "Could not extract version from properties file"
                     }
