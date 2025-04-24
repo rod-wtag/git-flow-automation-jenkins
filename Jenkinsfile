@@ -13,6 +13,7 @@ pipeline {
         stage('adding username and email') {
             steps {
                 script {
+                    echo "hello release branch"
                     sh """
                         git config user.name "rod-wtag"
                         git config user.email "roky.das@welldev.io"
