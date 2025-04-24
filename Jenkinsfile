@@ -12,19 +12,15 @@ pipeline {
 
     stages {
 
-        stage('Checkout & Check Branch') {
+        stage('Check Branch') {
             steps {
-                checkout scm
                 script {
-                    if (env.GIT_BRANCH) {
-                        env.BRANCH_NAME = env.GIT_BRANCH.replaceAll('origin/', '')
-                        echo "Current branch: ${env.BRANCH_NAME}"
-                        
-                        if (env.BRANCH_NAME == 'main' || env.GIT_BRANCH.contains('main')) {
-                            echo "Detected main branch. Skipping remaining pipeline execution."
-                            env.SHOULD_CONTINUE = false
-                            currentBuild.result = 'SUCCESS'
-                        }
+                    if (env.GIT_BRANCH.contains('main')) {
+                        echo "Detected main branch. Stopping pipeline execution."
+                        currentBuild.result = 'ABORTED'
+                        error "Pipeline stopped because it's running on main branch"
+                    } else {
+                        echo "Not on main branch, continuing with pipeline execution"
                     }
                 }
             }
