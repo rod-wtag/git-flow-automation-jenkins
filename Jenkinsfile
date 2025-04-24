@@ -6,12 +6,11 @@ pipeline {
     }
 
     environment {
-        BRANCH_NAME = ""
+        BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
         TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
     
-
     stages {
         stage('Set Branch Name') {
             steps {
