@@ -10,21 +10,22 @@ pipeline {
         GIT_CREDENTIALS_ID = 'github-creds'
     }
 
-    stage('Check Branch') {
-        steps {
-            script {
-                if (env.GIT_BRANCH.contains('main')) {
-                    echo "Detected main branch. Exiting pipeline as expected."
-                    currentBuild.result = 'SUCCESS'
-                    return
-                } else {
-                    echo "Not on main branch, continuing with pipeline execution"
+    stages {
+
+            stage('Check Branch') {
+                steps {
+                    script {
+                        if (env.GIT_BRANCH.contains('main')) {
+                            echo "Detected main branch. Exiting pipeline as expected."
+                            currentBuild.result = 'SUCCESS'
+                            return
+                        } else {
+                            echo "Not on main branch, continuing with pipeline execution"
+                        }
+                    }
                 }
             }
-        }
-    }
 
-    stages {
         stage('Get Version') {
             steps {
                 script {
