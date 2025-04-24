@@ -47,27 +47,17 @@ pipeline {
                         error "version: line not found in properties file"
                     }
 
+                    // Extract the version line
+                    def versionLine = versionFileContent.readLines().find { it.startsWith('version:') }
+                    if (!versionLine) {
+                        error "version: line not found in properties file"
+                    }
+
                     // Parse version numbers using split
                     def versionStr = versionLine.split(':')[1].trim()
                     def (major, minor, patch) = versionStr.split('\\.').collect { it.toInteger() }
-
-                    // Bump the patch
-                    patch += 1
-                    def newVersion = "${major}.${minor}.${patch}"
-                    env.VERSION = newVersion
-                    echo "Bumped version: ${env.VERSION}"
-
-                    // Replace the version line
-                    def updatedContent = versionFileContent.replaceAll(/version:\s*\d+\.\d+\.\d+/, "version: ${newVersion}")
-                    writeFile(file: versionFilePath, text: updatedContent)
-
-                    // Git commit and push
                     sh """
-                        git config user.name "jenkins"
-                        git config user.email "jenkins@example.com"
-                        git add ${versionFilePath}
-                        git commit -m "Bump version to ${env.VERSION}"
-                        git push origin HEAD
+                        echo "Current version: ${major}.${minor}.${patch}"
                     """
                 }
             }
