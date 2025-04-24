@@ -10,8 +10,7 @@ pipeline {
         TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
-    
-    
+
     stages {
         stage('Set Branch Name') {
             steps {
