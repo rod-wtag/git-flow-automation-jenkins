@@ -25,56 +25,6 @@ pipeline {
                     echo "BRANCH_NAME (Jenkins): ${env.BRANCH_NAME ?: 'null'}"
                     echo "CHANGE_BRANCH: ${env.CHANGE_BRANCH ?: 'null'}"
                     echo "gitlabBranch: ${env.gitlabBranch ?: 'null'}"
-                    
-                    // Try different git commands
-                    sh 'git branch'
-                    sh 'git status'
-                }
-            }
-        }
-        
-        stage('Set Branch Name') {
-            steps {
-                script {
-                    // Try multiple methods to determine branch name
-                    if (env.GIT_BRANCH) {
-                        env.BRANCH_NAME = env.GIT_BRANCH.replaceAll('origin/', '')
-                    } else if (env.CHANGE_BRANCH) {
-                        env.BRANCH_NAME = env.CHANGE_BRANCH
-                    } else if (env.gitlabBranch) {
-                        env.BRANCH_NAME = env.gitlabBranch
-                    } else {
-                        try {
-                            env.BRANCH_NAME = sh(script: "git branch --show-current", returnStdout: true).trim()
-                        } catch (Exception e) {
-                            echo "Error getting branch with git branch --show-current: ${e.message}"
-                        }
-                        
-                        if (!env.BRANCH_NAME) {
-                            try {
-                                env.BRANCH_NAME = sh(script: "git name-rev --name-only HEAD", returnStdout: true).trim().replaceAll('remotes/origin/', '')
-                            } catch (Exception e) {
-                                echo "Error getting branch with git name-rev: ${e.message}"
-                            }
-                        }
-                        
-                        if (!env.BRANCH_NAME) {
-                            try {
-                                env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                            } catch (Exception e) {
-                                echo "Error getting branch with git rev-parse: ${e.message}"
-                            }
-                        }
-                    }
-                    
-                    echo "Determined branch name: ${env.BRANCH_NAME ?: 'still null'}"
-                    
-                    // If we still don't have a branch name, set a default for testing
-                    if (!env.BRANCH_NAME) {
-                        echo "WARNING: Unable to determine branch name automatically"
-                        // Option: Hardcode branch for testing
-                        // env.BRANCH_NAME = "release/21.27"
-                    }
                 }
             }
         }
