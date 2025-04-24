@@ -12,10 +12,18 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
         stage('Set Branch Name') {
             steps {
                 script {
-                    env.BRANCH_NAME = sh(script: "git -C ${env.WORKSPACE} rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    // Use the Jenkins built-in env variable or retrieve from git
+                    env.BRANCH_NAME = env.GIT_BRANCH ? env.GIT_BRANCH.replaceAll('origin/', '') : 
+                                      sh(script: "git name-rev --name-only HEAD", returnStdout: true).trim()
                     echo "Current branch: ${env.BRANCH_NAME}"
                 }
             }
@@ -43,7 +51,9 @@ pipeline {
 
         stage('Merge Tag to release/21.28') {
             when {
-                branch 'release/21.27'
+                expression {
+                    return env.BRANCH_NAME == 'release/21.27'
+                }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
@@ -63,6 +73,5 @@ pipeline {
                 }
             }
         }
-
     }
 }
