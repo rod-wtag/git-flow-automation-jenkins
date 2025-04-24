@@ -51,8 +51,24 @@ pipeline {
                     // Parse version numbers using split
                     def versionStr = versionLine.split(':')[1].trim()
                     def (major, minor, patch) = versionStr.split('\\.').collect { it.toInteger() }
+                    
+                    // Bump the patch
+                    patch += 1
+                    def newVersion = "${major}.${minor}.${patch}"
+                    env.VERSION = newVersion
+                    echo "Bumped version: ${env.VERSION}"
+
+                    // Replace the version line
+                    def updatedContent = "version: ${newVersion}"
+                    writeFile(file: versionFilePath, text: updatedContent)
+
+                    // Git commit and push
                     sh """
-                        echo "Current version: ${major}.${minor}.${patch}"
+                        git config user.name "jenkins"
+                        git config user.email "jenkins@example.com"
+                        git add ${versionFilePath}
+                        git commit -m "Bump version to ${env.VERSION}"
+                        git push origin HEAD
                     """
                 }
             }
