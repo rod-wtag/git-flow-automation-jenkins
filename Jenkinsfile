@@ -43,10 +43,15 @@ pipeline {
         }
 
         stage('bump version') {
-            sh """
-                echo "Bumping version to ${env.VERSION}"
-                sed -i 's/version: .*/version: ${env.VERSION}/' system/config/version.properties
-            """
+            steps {
+                script {
+                    sh """
+                        echo "Bumping version to ${env.VERSION}"
+                        sed -i 's/version: .*/version: ${env.VERSION}/' system/config/version.properties
+                    """
+                }
+            }
+            
         }
 
         // stage('Tag & Push') {
