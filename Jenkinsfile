@@ -15,17 +15,16 @@ pipeline {
         stage('Check Branch') {
             steps {
                 script {
-                    if (env.GIT_BRANCH.contains('main')) {
-                        echo "Detected main branch. Stopping pipeline execution."
+                    if (!env.GIT_BRANCH.contains('release/')) {
+                        echo "Not detected release branch. Stopping pipeline execution."
                         currentBuild.result = 'ABORTED'
-                        error "Pipeline stopped because it's running on main branch"
+                        error "Pipeline stopped because it's not running on release branch"
                     } else {
-                        echo "Not on main branch, continuing with pipeline execution"
+                        echo "It's a release branch, continuing with pipeline execution"
                     }
                 }
             }
         }
-
 
         stage('Get Version') {
             steps {
