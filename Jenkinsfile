@@ -22,19 +22,19 @@ pipeline {
         }
         
 
-        // stage('Check Branch') {
-        //     steps {
-        //         script {
-        //             if (!env.GIT_BRANCH.contains('release/')) {
-        //                 echo "Not detected release branch. Stopping pipeline execution."
-        //                 currentBuild.result = 'ABORTED'
-        //                 error "Pipeline stopped because it's not running on release branch"
-        //             } else {
-        //                 echo "It's a release branch, continuing with pipeline execution"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Check Branch') {
+            steps {
+                script {
+                    if (!env.GIT_BRANCH.contains('release/')) {
+                        echo "Not detected release branch. Stopping pipeline execution."
+                        currentBuild.result = 'ABORTED'
+                        error "Pipeline stopped because it's not running on release branch"
+                    } else {
+                        echo "It's a release branch, continuing with pipeline execution"
+                    }
+                }
+            }
+        }
 
         stage('Get and Bump Version') {
             steps {
