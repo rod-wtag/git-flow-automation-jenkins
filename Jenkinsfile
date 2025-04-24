@@ -12,19 +12,69 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout & Debug') {
             steps {
                 checkout scm
+                
+                script {
+                    // Print all environment variables for debugging
+                    sh 'env | sort'
+                    
+                    // Try multiple methods to get branch name
+                    echo "GIT_BRANCH: ${env.GIT_BRANCH ?: 'null'}"
+                    echo "BRANCH_NAME (Jenkins): ${env.BRANCH_NAME ?: 'null'}"
+                    echo "CHANGE_BRANCH: ${env.CHANGE_BRANCH ?: 'null'}"
+                    echo "gitlabBranch: ${env.gitlabBranch ?: 'null'}"
+                    
+                    // Try different git commands
+                    sh 'git branch'
+                    sh 'git status'
+                }
             }
         }
         
         stage('Set Branch Name') {
             steps {
                 script {
-                    // Use the Jenkins built-in env variable or retrieve from git
-                    env.BRANCH_NAME = env.GIT_BRANCH ? env.GIT_BRANCH.replaceAll('origin/', '') : 
-                                      sh(script: "git name-rev --name-only HEAD", returnStdout: true).trim()
-                    echo "Current branch: ${env.BRANCH_NAME}"
+                    // Try multiple methods to determine branch name
+                    if (env.GIT_BRANCH) {
+                        env.BRANCH_NAME = env.GIT_BRANCH.replaceAll('origin/', '')
+                    } else if (env.CHANGE_BRANCH) {
+                        env.BRANCH_NAME = env.CHANGE_BRANCH
+                    } else if (env.gitlabBranch) {
+                        env.BRANCH_NAME = env.gitlabBranch
+                    } else {
+                        try {
+                            env.BRANCH_NAME = sh(script: "git branch --show-current", returnStdout: true).trim()
+                        } catch (Exception e) {
+                            echo "Error getting branch with git branch --show-current: ${e.message}"
+                        }
+                        
+                        if (!env.BRANCH_NAME) {
+                            try {
+                                env.BRANCH_NAME = sh(script: "git name-rev --name-only HEAD", returnStdout: true).trim().replaceAll('remotes/origin/', '')
+                            } catch (Exception e) {
+                                echo "Error getting branch with git name-rev: ${e.message}"
+                            }
+                        }
+                        
+                        if (!env.BRANCH_NAME) {
+                            try {
+                                env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                            } catch (Exception e) {
+                                echo "Error getting branch with git rev-parse: ${e.message}"
+                            }
+                        }
+                    }
+                    
+                    echo "Determined branch name: ${env.BRANCH_NAME ?: 'still null'}"
+                    
+                    // If we still don't have a branch name, set a default for testing
+                    if (!env.BRANCH_NAME) {
+                        echo "WARNING: Unable to determine branch name automatically"
+                        // Option: Hardcode branch for testing
+                        // env.BRANCH_NAME = "release/21.27"
+                    }
                 }
             }
         }
@@ -36,6 +86,7 @@ pipeline {
                 }
             }
             steps {
+                echo "Running Tag & Push for branch: ${env.BRANCH_NAME}"
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     sh '''
                         git config user.name "rod-wtag"
@@ -56,6 +107,7 @@ pipeline {
                 }
             }
             steps {
+                echo "Running Merge Tag for branch: ${env.BRANCH_NAME}"
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
                     script {
                         sh '''
@@ -72,6 +124,12 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    
+    post {
+        always {
+            echo "Pipeline completed. Final branch name: ${env.BRANCH_NAME}"
         }
     }
 }
