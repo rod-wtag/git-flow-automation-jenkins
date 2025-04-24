@@ -39,6 +39,7 @@ pipeline {
                         error "Could not extract version from properties file"
                     }
                 }
+                
             }
         }
 
