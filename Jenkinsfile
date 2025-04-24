@@ -25,6 +25,7 @@ pipeline {
         stage('Check Branch') {
             steps {
                 script {
+                    echo "Current branch: ${env.GIT_BRANCH}"
                     if (!env.GIT_BRANCH.contains('release/')) {
                         echo "Not detected release branch. Stopping pipeline execution."
                         currentBuild.result = 'ABORTED'
