@@ -55,6 +55,7 @@ pipeline {
 
                         // Replace the version line in the file
                         def updatedContent = "version: ${newVersion}"
+                        echo "Updated content: ${updatedContent}"
                         // writeFile(file: versionFilePath, text: updatedContent)
                         // echo "Updated version.properties file with new version."
 
