@@ -13,10 +13,13 @@ pipeline {
         stage('adding username and email') {
             steps {
                 script {
-                    sh """
-                        git config user.name "rod-wtag"
-                        git config user.email "roky.das@welldev.io"
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh """
+                            git config user.name "rod-wtag"
+                            git config user.email "roky.das@welldev.io"
+                            git remote set-url origin https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git
+                        """
+                    }
                 }
             }
         }
