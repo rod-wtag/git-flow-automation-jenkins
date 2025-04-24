@@ -12,19 +12,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout & Debug') {
+        stage('Checkout & Set Branch Name') {
             steps {
                 checkout scm
                 
                 script {
-                    // Print all environment variables for debugging
-                    sh 'env | sort'
-                    
-                    // Try multiple methods to get branch name
-                    echo "GIT_BRANCH: ${env.GIT_BRANCH ?: 'null'}"
-                    echo "BRANCH_NAME (Jenkins): ${env.BRANCH_NAME ?: 'null'}"
-                    echo "CHANGE_BRANCH: ${env.CHANGE_BRANCH ?: 'null'}"
-                    echo "gitlabBranch: ${env.gitlabBranch ?: 'null'}"
+                    // Extract branch name from GIT_BRANCH by removing 'origin/' prefix
+                    if (env.GIT_BRANCH) {
+                        env.BRANCH_NAME = env.GIT_BRANCH.replaceAll('origin/', '')
+                        echo "Current branch: ${env.BRANCH_NAME}"
+                    } else {
+                        echo "GIT_BRANCH is null, unable to determine branch name"
+                    }
                 }
             }
         }
