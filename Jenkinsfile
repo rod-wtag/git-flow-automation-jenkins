@@ -19,7 +19,7 @@ pipeline {
                 script {
                     // Extract branch name from GIT_BRANCH by removing 'origin/' prefix
                     if (env.GIT_BRANCH) {
-                        env.BRANCH_NAME = env.GIT_BRANCH.replaceAll('origin/', '')
+                        env.GIT_BRANCH = env.GIT_BRANCH.replaceAll('origin/', '')
                         echo "Current branch: ${env.GIT_BRANCH}"
                         echo "Current branch: ${env.BRANCH_NAME}"
                     } else {
