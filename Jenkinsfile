@@ -13,13 +13,10 @@ pipeline {
         stage('adding username and email') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        sh """
-                            git config user.name "rod-wtag"
-                            git config user.email "roky.das@welldev.io"
-                            git remote set-url origin https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git
-                        """
-                    }
+                    sh """
+                        git config user.name "rod-wtag"
+                        git config user.email "roky.das@welldev.io"
+                    """
                 }
             }
         }
@@ -66,13 +63,17 @@ pipeline {
                     writeFile(file: versionFilePath, text: updatedContent)
 
                     // Git commit and push
-                    sh """
-                        git config user.name "rod-wtag"
-                        git config user.email "roky.das@welldev.io"
-                        git add ${versionFilePath}
-                        git commit -m "Bump version to ${env.VERSION}"
-                        git push origin HEAD:${env.GIT_BRANCH}
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
+                        sh """
+                            git config user.name "rod-wtag"
+                            git config user.email "roky.das@welldev.io"
+                            git add ${versionFilePath}
+                            git commit -m "Bump version to ${env.VERSION}"
+                            git push origin HEAD:${env.GIT_BRANCH}
+                            git push https://$GIT_USERNAME:$GIT_TOKEN@github.com/rod-wtag/git-flow-automation-jenkins.git HEAD:${env.GIT_BRANCH}
+                        """
+                    }
+                    
                 }
             }
         }
