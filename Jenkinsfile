@@ -58,8 +58,6 @@ pipeline {
                         """
                     } else {
                         error "Could not extract version from properties file"
-                    } else {
-                        error "Could not extract version from properties file"
                     }
                 }
             }
