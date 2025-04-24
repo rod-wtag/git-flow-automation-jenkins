@@ -26,15 +26,38 @@ pipeline {
         //     }
         // }
 
-        stage('Get Version') {
+        stage('Get and Bump Version') {
             steps {
                 script {
-                    def versionFile = readFile('system/config/version.properties').trim()
-                    def versionMatch = versionFile =~ /version:\s*(\d+\.\d+\.\d+)/
-                    
+                    def versionFilePath = 'system/config/version.properties'
+                    def versionFileContent = readFile(versionFilePath).trim()
+                    def versionMatch = versionFileContent =~ /version:\s*(\d+)\.(\d+)\.(\d+)/
+
                     if (versionMatch.find()) {
-                        env.VERSION = versionMatch[0][1]
-                        echo "Extracted version: ${env.VERSION}"
+                        def major = versionMatch[0][1].toInteger()
+                        def minor = versionMatch[0][2].toInteger()
+                        def patch = versionMatch[0][3].toInteger()
+
+                        patch += 1
+                        def newVersion = "${major}.${minor}.${patch}"
+                        env.VERSION = newVersion
+                        echo "Bumped version: ${env.VERSION}"
+
+                        // Replace the version line in the file
+                        def updatedContent = versionFileContent.replaceAll(/version:\s*\d+\.\d+\.\d+/, "version: ${newVersion}")
+                        writeFile(file: versionFilePath, text: updatedContent)
+                        echo "Updated version.properties file with new version."
+
+                        // Git commit and push
+                        sh """
+                            git config user.name "rod-wtag"
+                            git config user.email "roky.das@welldev.io"
+                            git add ${versionFilePath}
+                            git commit -m "Bump version to ${env.VERSION}"
+                            git push origin HEAD
+                        """
+                    } else {
+                        error "Could not extract version from properties file"
                     } else {
                         error "Could not extract version from properties file"
                     }
@@ -42,17 +65,6 @@ pipeline {
             }
         }
 
-        stage('bump version') {
-            steps {
-                script {
-                    sh """
-                        echo "Bumping version to ${env.VERSION}"
-                        sed -i 's/version: .*/version: ${env.VERSION}/' system/config/version.properties
-                    """
-                }
-            }
-            
-        }
 
         // stage('Tag & Push') {
         //     when {
