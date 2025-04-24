@@ -64,8 +64,8 @@ pipeline {
 
                     // Git commit and push
                     sh """
-                        git config user.name "jenkins"
-                        git config user.email "jenkins@example.com"
+                        git config user.name "rod-wtag"
+                        git config user.email "roky.das@welldev.io"
                         git add ${versionFilePath}
                         git commit -m "Bump version to ${env.VERSION}"
                         git push origin HEAD
