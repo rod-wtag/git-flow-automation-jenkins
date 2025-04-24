@@ -41,38 +41,36 @@ pipeline {
                 script {
                     def versionFilePath = 'system/config/version.properties'
                     def versionFileContent = readFile(versionFilePath).trim()
-                    def versionMatch = versionFileContent =~ /version:\s*(\d+)\.(\d+)\.(\d+)/
 
-                    if (versionMatch.find()) {
-                        def major = versionMatch[0][1].toInteger()
-                        def minor = versionMatch[0][2].toInteger()
-                        def patch = versionMatch[0][3].toInteger()
-
-                        patch += 1
-                        def newVersion = "${major}.${minor}.${patch}"
-                        env.VERSION = newVersion
-                        echo "Bumped version: ${env.VERSION}"
-
-                        // Replace the version line in the file
-                        def updatedContent = "version: ${newVersion}"
-                        echo "Updated content: ${updatedContent}"
-                        // writeFile(file: versionFilePath, text: updatedContent)
-                        // echo "Updated version.properties file with new version."
-
-                        // Git commit and push
-                        // sh """
-                        //     git config user.name "rod-wtag"
-                        //     git config user.email "roky.das@welldev.io"
-                        //     git add ${versionFilePath}
-                        //     git commit -m "Bump version to ${env.VERSION}"
-                        //     git push origin HEAD
-                        // """
-                    } else {
+                    // Do matching and value extraction in the same block
+                    def matcher = versionFileContent =~ /version:\s*(\d+)\.(\d+)\.(\d+)/
+                    if (!matcher.find()) {
                         error "Could not extract version from properties file"
                     }
+
+                    // Extract version components immediately
+                    def (major, minor, patch) = [matcher.group(1), matcher.group(2), matcher.group(3)].collect { it.toInteger() }
+                    def newVersion = "${major}.${minor}.${patch + 1}"
+                    env.VERSION = newVersion
+                    echo "Bumped version: ${env.VERSION}"
+
+                    // Replace version in file
+                    def updatedContent = versionFileContent.replaceAll(/version:\s*\d+\.\d+\.\d+/, "version: ${newVersion}")
+                    writeFile(file: versionFilePath, text: updatedContent)
+                    echo "Updated version.properties file with new version."
+
+                    // Git commit and push
+                    sh """
+                        git config user.name "jenkins"
+                        git config user.email "jenkins@example.com"
+                        git add ${versionFilePath}
+                        git commit -m "Bump version to ${env.VERSION}"
+                        git push origin HEAD
+                    """
                 }
             }
         }
+
 
 
         // stage('Tag & Push') {
