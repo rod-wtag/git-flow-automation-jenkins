@@ -10,6 +10,16 @@ pipeline {
     }
 
     stages {
+        stage('adding username and email') {
+            steps {
+                script {
+                    sh """
+                        git config user.name "rod-wtag"
+                        git config user.email "roky.das@welldev.io"
+                    """
+                }
+            }
+        }
         
 
         // stage('Check Branch') {
@@ -44,7 +54,7 @@ pipeline {
                         echo "Bumped version: ${env.VERSION}"
 
                         // Replace the version line in the file
-                        def updatedContent = versionFileContent.replaceAll(/version:\s*\d+\.\d+\.\d+/, "version: ${newVersion}")
+                        def updatedContent = "version: ${newVersion}"
                         writeFile(file: versionFilePath, text: updatedContent)
                         echo "Updated version.properties file with new version."
 
