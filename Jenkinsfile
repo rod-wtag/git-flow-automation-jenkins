@@ -70,7 +70,7 @@ pipeline {
                             git remote set-url origin https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/rod-wtag/git-flow-automation-jenkins.git
                             git add ${versionFilePath}
                             git commit -m "Bump version to ${env.VERSION}"
-                            git push origin HEAD:${env.BRANCH_NAME}
+                            git push origin HEAD:${env.GIT_BRANCH}
                         """
                     }
 
