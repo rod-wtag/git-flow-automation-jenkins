@@ -15,7 +15,7 @@ pipeline {
         stage('Set Branch Name') {
             steps {
                 script {
-                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    env.BRANCH_NAME = sh(script: "git -C ${env.WORKSPACE} rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                     echo "Current branch: ${env.BRANCH_NAME}"
                 }
             }
