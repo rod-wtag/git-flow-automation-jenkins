@@ -6,24 +6,22 @@ pipeline {
     }
 
     environment {
-        BRANCH_NAME = ""
         TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
 
     stages {
-        stage('Checkout & Set Branch Name') {
+        stage('Get Version') {
             steps {
-                checkout scm
-                
                 script {
-                    // Extract branch name from GIT_BRANCH by removing 'origin/' prefix
-                    if (env.GIT_BRANCH) {
-                        env.GIT_BRANCH = env.GIT_BRANCH.replaceAll('origin/', '')
-                        echo "Current branch: ${env.GIT_BRANCH}"
-                        echo "Current branch: ${env.BRANCH_NAME}"
+                    def versionFile = readFile('system/config/version.properties').trim()
+                    def versionMatch = versionFile =~ /version:\s*(\d+\.\d+\.\d+)/
+                    
+                    if (versionMatch.find()) {
+                        env.VERSION = versionMatch[0][1]
+                        echo "Extracted version: ${env.VERSION}"
                     } else {
-                        echo "GIT_BRANCH is null, unable to determine branch name"
+                        error "Could not extract version from properties file"
                     }
                 }
             }
