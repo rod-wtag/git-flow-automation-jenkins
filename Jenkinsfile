@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+        BRANCH_NAME = ""
         TAG_NAME = "r21.27.27"
         GIT_CREDENTIALS_ID = 'github-creds'
     }
@@ -15,25 +15,17 @@ pipeline {
         stage('Set Branch Name') {
             steps {
                 script {
-                    def currentBranch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    echo "Current branch: ${currentBranch}"
-                    env.BRANCH_NAME = currentBranch
+                    env.BRANCH_NAME = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    echo "Current branch: ${env.BRANCH_NAME}"
                 }
-            }
-        }
-
-        stage('Only on release/21.27') {
-            when {
-                branch 'release/21.27'
-            }
-            steps {
-                echo "Triggered on release/21.27"
             }
         }
 
         stage('Tag & Push') {
             when {
-                branch 'release/21.27'
+                expression {
+                    return env.BRANCH_NAME == 'release/21.27'
+                }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_TOKEN')]) {
