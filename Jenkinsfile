@@ -55,8 +55,8 @@ pipeline {
 
                         // Replace the version line in the file
                         def updatedContent = "version: ${newVersion}"
-                        writeFile(file: versionFilePath, text: updatedContent)
-                        echo "Updated version.properties file with new version."
+                        // writeFile(file: versionFilePath, text: updatedContent)
+                        // echo "Updated version.properties file with new version."
 
                         // Git commit and push
                         // sh """
