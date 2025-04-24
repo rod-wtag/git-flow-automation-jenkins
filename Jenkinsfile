@@ -40,24 +40,26 @@ pipeline {
             steps {
                 script {
                     def versionFilePath = 'system/config/version.properties'
-                    def versionFileContent = readFile(versionFilePath).trim()
 
-                    // Do matching and value extraction in the same block
-                    def matcher = versionFileContent =~ /version:\s*(\d+)\.(\d+)\.(\d+)/
-                    if (!matcher.find()) {
-                        error "Could not extract version from properties file"
+                    // Extract the version line
+                    def versionLine = versionFileContent.readLines().find { it.startsWith('version:') }
+                    if (!versionLine) {
+                        error "version: line not found in properties file"
                     }
 
-                    // Extract version components immediately
-                    def (major, minor, patch) = [matcher.group(1), matcher.group(2), matcher.group(3)].collect { it.toInteger() }
-                    def newVersion = "${major}.${minor}.${patch + 1}"
+                    // Parse version numbers using split
+                    def versionStr = versionLine.split(':')[1].trim()
+                    def (major, minor, patch) = versionStr.split('\\.').collect { it.toInteger() }
+
+                    // Bump the patch
+                    patch += 1
+                    def newVersion = "${major}.${minor}.${patch}"
                     env.VERSION = newVersion
                     echo "Bumped version: ${env.VERSION}"
 
-                    // Replace version in file
+                    // Replace the version line
                     def updatedContent = versionFileContent.replaceAll(/version:\s*\d+\.\d+\.\d+/, "version: ${newVersion}")
                     writeFile(file: versionFilePath, text: updatedContent)
-                    echo "Updated version.properties file with new version."
 
                     // Git commit and push
                     sh """
@@ -70,7 +72,6 @@ pipeline {
                 }
             }
         }
-
 
 
         // stage('Tag & Push') {
