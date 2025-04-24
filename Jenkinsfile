@@ -47,12 +47,6 @@ pipeline {
                         error "version: line not found in properties file"
                     }
 
-                    // Extract the version line
-                    def versionLine = versionFileContent.readLines().find { it.startsWith('version:') }
-                    if (!versionLine) {
-                        error "version: line not found in properties file"
-                    }
-
                     // Parse version numbers using split
                     def versionStr = versionLine.split(':')[1].trim()
                     def (major, minor, patch) = versionStr.split('\\.').collect { it.toInteger() }
