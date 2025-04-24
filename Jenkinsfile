@@ -68,7 +68,7 @@ pipeline {
                         git config user.email "roky.das@welldev.io"
                         git add ${versionFilePath}
                         git commit -m "Bump version to ${env.VERSION}"
-                        git push origin main HEAD:main
+                        git push origin HEAD:${env.GIT_BRANCH}
                     """
                 }
             }
