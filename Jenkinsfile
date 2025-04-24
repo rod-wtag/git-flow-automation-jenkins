@@ -40,6 +40,7 @@ pipeline {
             steps {
                 script {
                     def versionFilePath = 'system/config/version.properties'
+                    def versionFileContent = readFile(versionFilePath).trim()
 
                     // Extract the version line
                     def versionLine = versionFileContent.readLines().find { it.startsWith('version:') }
